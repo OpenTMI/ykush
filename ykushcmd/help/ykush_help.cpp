@@ -33,7 +33,7 @@ void Help::print(void)
     char line[150];
 
     //open text file
-#ifndef LINUX
+#ifdef WINDOWS
 	fopen_s(&fp, file_name, "r");
 #else
     fp = fopen(file_name, "r");
@@ -59,7 +59,3 @@ void Help::print(void)
     return;
 
 }
-
-
-
-

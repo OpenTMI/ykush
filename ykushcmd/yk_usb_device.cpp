@@ -28,10 +28,6 @@ limitations under the License.
 #include "yk_usb_device.h"
 
 
-using namespace std;
-
-
-
 
 
 /**************************************************************************
@@ -42,14 +38,14 @@ using namespace std;
  * attached YKUSH devices.
  *
  **************************************************************************/
-int UsbDevice::listConnected() 
+int UsbDevice::listConnected()
 {
     int i=0;
 
     struct hid_device_info *devs, *cur_dev;
-        
+
     devs = hid_enumerate(vid, pid);
-    if (devs == NULL) 
+    if (devs == NULL)
     {
         if (handle == NULL)
         {
@@ -59,17 +55,17 @@ int UsbDevice::listConnected()
     }
 
     cur_dev = devs;
-    while (cur_dev) 
+    while (cur_dev)
     {
         printf("\n%ls\n", cur_dev->serial_number);
         cur_dev = cur_dev->next;
         i++;
     }
-    
+
     hid_free_enumeration(devs);
 
     return i;
-    
+
 }
 
 
@@ -86,7 +82,7 @@ UsbDevice::UsbDevice(unsigned int vendor_id, unsigned int product_id) {
 
 
 /*****************************************************************
- * Function: 
+ * Function:
  *
  *  send_usb_msg
  *
@@ -94,7 +90,7 @@ UsbDevice::UsbDevice(unsigned int vendor_id, unsigned int product_id) {
  * Description:
  *
  *  Sends HID report with the data provided in the input buffer
- *  "msg". 
+ *  "msg".
  *
  *
  * Inputs:
@@ -116,21 +112,21 @@ UsbDevice::UsbDevice(unsigned int vendor_id, unsigned int product_id) {
  *  output.
  *
  *
- * Precedences: 
+ * Precedences:
  *
  *  Requires that VENDOR_ID and PRODUCT_ID constants are defined.
  *
  *
  *****************************************************************/
 int UsbDevice::sendHidReport(char *serial, unsigned char *msg, unsigned char *resp_msg, int report_size) {
-	
+
     const size_t newsize = 100;
 	wchar_t cserial[newsize];
-    int res;	
+    int res;
 
-    
+
     if (serial) {
-#ifndef LINUX
+#ifdef _TRUNCATE
 		// Convert to a wchar_t*
 		size_t origsize = strlen(serial) + 1;
 		size_t convertedChars = 0;
@@ -141,10 +137,10 @@ int UsbDevice::sendHidReport(char *serial, unsigned char *msg, unsigned char *re
 #endif
 	}
 
-    
-    // Open the USB device 
+
+    // Open the USB device
     handle = hid_open(vid, pid, serial ? cserial : NULL);
-  
+
     if (handle == NULL) {
 	    //printf("\n\nERROR: Unable to open USB device\n");
         return -1;
@@ -153,7 +149,7 @@ int UsbDevice::sendHidReport(char *serial, unsigned char *msg, unsigned char *re
     // Set the hid_read() function to be blocking (wait for response from the device).
     hid_set_nonblocking(handle, USB_CMD_NON_BLOCKING);
 
-    
+
     //send HID report
 	res = hid_write(handle, msg, report_size);
 
@@ -171,16 +167,6 @@ int UsbDevice::sendHidReport(char *serial, unsigned char *msg, unsigned char *re
 	}
 
 
-   return 0;    //OK 
+   return 0;    //OK
 
 }
-
-
-
-
-
-
-
-
-
-
