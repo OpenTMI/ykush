@@ -55,12 +55,18 @@ int UsbDevice::listConnected()
     }
 
     cur_dev = devs;
+    printf("[\n");
     while (cur_dev)
     {
-        printf("\n%ls\n", cur_dev->serial_number);
+        printf("  \"%ls\"", cur_dev->serial_number);
         cur_dev = cur_dev->next;
+        if (cur_dev) {
+          printf(",");
+        }
+        printf("\n");
         i++;
     }
+    printf("]\n");
 
     hid_free_enumeration(devs);
 
